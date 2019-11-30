@@ -1,0 +1,89 @@
+<app-title-page></app-title-page>
+<div class="default-card">
+  <div class="info-panel">
+    <div style="position: absolute; top: 0px; right: 0px">
+      <button nz-button nzType="default" routerLink="/users/{{ user.id }}/detail/edit" nzTitle="Sửa thông tin"
+        nzPlacement="bottom" nz-tooltip>
+        <i nz-icon nzType="edit" nzTheme="outline"></i>
+      </button>
+      <button nz-button nzType="default" routerLink="/users/{{ user.id }}/detail/security" nzTitle="Bảo mật"
+        nzPlacement="bottom" nz-tooltip>
+        <i nz-icon nzType="key" nzTheme="outline"></i>
+      </button>
+      <ng-container *nbIsGranted="['edit', 'user']">
+        <ng-container *ngIf="canBlock">
+          <button *ngIf="!user.block" nz-button nzType="danger" nzPlacement="bottom" nz-tooltip nzTitle="Khóa tài khoản"
+            (click)="confirmBlockAccount()">
+            <i nz-icon nzType="lock" nzTheme="outline"></i>
+          </button>
+          <button *ngIf="user.block" nz-button nzType="primary" nzGhost nzPlacement="bottom" nz-tooltip
+            nzTitle="Mở khóa tài khoản" (click)="confirmUnBlockAccount()">
+            <i nz-icon nzType="unlock" nzTheme="outline"></i>
+          </button>
+        </ng-container>
+      </ng-container>
+    </div>
+    <img style="width: 96px; height: 96px; border-radius: 50%" [src]="avatar">
+    <h3>{{ user.fullName }} (<span>#{{ user.username }}</span>)</h3>
+    <p><b>{{ user?.roles?.length <= 0 ? ROLE_NAME.ROLE_CUSTOMER : ROLE_NAME[role] }}</b></p>
+  </div>
+
+  <nz-card class="w-100" [nzBordered]="false">
+    <nz-card-tab>
+      <nz-tabset nzSize="large" [nzSelectedIndex]="0" [nzTabBarStyle]="{'text-align': 'center'}">
+        <nz-tab nzTitle="Hoạt động">
+          <nz-card [nzBordered]="false" nzTitle="Hoạt động gần đây">
+            <nz-timeline [nzPending]="pending">
+              <nz-timeline-item *ngFor="let action of actions" [nzColor]="ACTION_COLOR[action.status]">
+                <p>
+                  <small>{{ action.createAt | vdatetime }} - {{ action.createAt }}</small>
+                </p>
+                <p><b>{{ user?.fullName }}</b>
+                  <span *ngIf="action.status === 'POST'"> đã tạo một yêu cầu <b>#{{ action.requestId }}</b></span>
+                  <span *ngIf="action.status === 'RECEIVE'"> đã xem cho yêu cầu <b>#{{ action.requestId }}</b></span>
+                  <span *ngIf="action.status === 'QUOTE'"> đã báo giá <b>{{ action.point }}</b> cho yêu cầu
+                    <b>#{{ action.requestId }}</b></span>
+                  <span *ngIf="action.status === 'ACCEPT'"> đã chấp nhận yêu cầu <b>#{{ action.requestId }}</b> với giá
+                    <b>{{ action.point }}</b></span>
+                  <span *ngIf="action.status === 'COMPLETE'"> đã báo hoàn thành yêu cầu
+                    <b>#{{ action.requestId }}</b></span>
+                  <span *ngIf="action.status === 'CLOSE'"> đã đóng yêu cầu <b>#{{ action.requestId }}</b></span>
+                  <a href="javascript:void(0)" routerLink="/posts/{{ action.postId }}/detail">{{ action.postTitle }}</a>
+                  <span *ngIf="action.status === 'FEEDBACK'"> đã đánh giá</span>
+                </p>
+                <p><a href="#" [routerLink]="['/posts', action.requestId, 'detail']">Chi tiết</a></p>
+              </nz-timeline-item>
+            </nz-timeline>
+            <ng-template #more>
+              <a href="javascript:void(0)" (click)="loadAction(user.id)">Xem thêm...</a>
+            </ng-template>
+          </nz-card>
+        </nz-tab>
+
+        <nz-tab nzTitle="Bài đăng" *ngIf="role === 'ROLE_CUSTOMER' || role === 'ROLE_REPAIRER'">
+          <app-post-list [filterBy]="id"></app-post-list>
+        </nz-tab>
+
+        <nz-tab nzTitle="Đánh giá" *ngIf="role === 'ROLE_CUSTOMER' || role === 'ROLE_REPAIRER'">
+          <nz-list [nzDataSource]="feedback" [nzRenderItem]="item" [nzItemLayout]="'vertical'" [nzLoading]="loading"
+            nzNoResult="Không có dữ liệu">
+            <ng-template #item let-item>
+              <nz-list-item *ngIf="item.feedBack">
+                <nz-list-item-meta [nzTitle]="item.userFullName" [nzAvatar]="item.userAvatar"
+                  [nzDescription]="nzDescription">
+                  <ng-template #nzDescription>
+                    <p>{{ item.createAt | vdatetime}}</p>
+                    <nz-rate [ngModel]="item.rate" nzDisabled nzAllowHalf></nz-rate>
+                    <p style="color: rgba(0, 0, 0, 0.65);">{{ item.comment }} </p>
+                    <p><a href="/posts/{{ item.requestId }}">Chi tiết</a> </p>
+                  </ng-template>
+                </nz-list-item-meta>
+              </nz-list-item>
+            </ng-template>
+          </nz-list>
+        </nz-tab>
+
+      </nz-tabset>
+    </nz-card-tab>
+  </nz-card>
+</div>

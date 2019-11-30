@@ -1,0 +1,27 @@
+<nz-list [nzDataSource]="data" [nzItemLayout]="'vertical'" [nzRenderItem]="item" [nzPagination]="pagination"
+  [nzLoading]="loading" nzNoResult="Không có dữ liệu">
+  <ng-template #item let-item>
+    <nz-list-item [nzContent]="extra" [nzActions]="[statusAction, quoteAction, viewAction]">
+      <ng-template #statusAction>
+        <nz-tag [nzColor]="colorStatus[item.status]">{{ nameStatus[item.status] }}</nz-tag>
+      </ng-template>
+      <ng-template #viewAction><i nz-icon nzType="eye" style="margin-right: 8px;"></i> {{ item.noReceiver }}
+      </ng-template>
+      <ng-template #quoteAction><i nz-icon nzType="dollar" style="margin-right: 8px;"></i> {{ item.noQuote }}
+      </ng-template>
+      <nz-list-item-meta [nzAvatar]="item.userAvatar" [nzTitle]="nzTitle" nzDescription="{{ item.createAt | vdatetime}}">
+        <ng-template #nzTitle><span nz-text nzType="primary">{{ item.userFullName }}</span></ng-template>
+      </nz-list-item-meta>
+      <ng-template #extra>
+        <div class="my-2">{{ item.textDescription }}</div>
+        <img *ngFor="let image of item.imagesDescription" class="mr-2" width="150" alt="logo"
+          src="{{ HOST }}/requests/description-images/{{ image }}" />
+      </ng-template>
+    </nz-list-item>
+  </ng-template>
+
+  <ng-template #pagination>
+    <nz-pagination nzHideOnSinglePage="true" [nzPageIndex]="page.number + 1" [nzPageSize]="page.size"
+      [nzTotal]="page.totalElements" (nzPageIndexChange)="loadData($event)"></nz-pagination>
+  </ng-template>
+</nz-list>

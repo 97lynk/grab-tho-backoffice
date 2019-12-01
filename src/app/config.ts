@@ -2,10 +2,11 @@ import { NbAuthOAuth2JWTToken, NbOAuth2ClientAuthMethod, NbOAuth2GrantType } fro
 import { NbOAuth2AuthStrategyOptions } from '@nebular/auth/strategies/oauth2/oauth2-strategy.options';
 import { HttpRequest } from '@angular/common/http';
 import { NbAclOptions } from '@nebular/security';
+import { environment } from 'src/environments/environment';
 
 export const authConfig: NbOAuth2AuthStrategyOptions = {
   name: 'userpass',
-  baseEndpoint: 'http://localhost:8080/',
+  baseEndpoint: environment.host_be + '/',
   clientId: 'managementClient',
   clientSecret: '333',
   clientAuthMethod: NbOAuth2ClientAuthMethod.BASIC,

@@ -9,11 +9,14 @@
       </ng-template>
       <ng-template #quoteAction><i nz-icon nzType="dollar" style="margin-right: 8px;"></i> {{ item.noQuote }}
       </ng-template>
-      <nz-list-item-meta [nzAvatar]="item.userAvatar" [nzTitle]="nzTitle" nzDescription="{{ item.createAt | vdatetime}}">
+      <nz-list-item-meta [nzAvatar]="item.userAvatar" [nzTitle]="nzTitle"
+        nzDescription="{{ item.createAt | vdatetime}}">
         <ng-template #nzTitle><span nz-text nzType="primary">{{ item.userFullName }}</span></ng-template>
       </nz-list-item-meta>
       <ng-template #extra>
-        <div class="my-2">{{ item.textDescription }}</div>
+        <p class="my-2">
+          {{ item.textDescription }} <a href="#" [routerLink]="['/posts', item.id, 'detail']">Chi tiết</a>
+        </p>
         <img *ngFor="let image of item.imagesDescription" class="mr-2" width="150" alt="logo"
           src="{{ HOST }}/requests/description-images/{{ image }}" />
       </ng-template>

@@ -16,7 +16,8 @@ export class UserSecurityComponent implements OnInit {
   newPassword = '';
   confirmPassword = '';
 
-  // wrongPassword = false;
+  passwordVisible = false;
+  cfPasswordVisible = false;
   noMatchPassword = false;
   user: User;
 

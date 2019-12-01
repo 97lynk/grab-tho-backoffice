@@ -33,6 +33,14 @@ export class UserCreateNewComponent implements OnInit {
     role: 'ROLE_USER'
   };
 
+  passwordVisible = false;
+
+  cfPasswordVisible = false;
+
+  noMatchPassword = false;
+
+  hasError = false;
+
   constructor(
     private msg: NzMessageService,
     private userService: UserService,

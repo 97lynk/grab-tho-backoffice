@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "site": "management-grabtho",
+      "public": "docs",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Action } from '../model/Action';
 import { Observable } from 'rxjs/internal/Observable';
 import { Page } from '../model/Page';
-import { Post } from '../model/Post';
+import { Post } from '../model/Posts';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -42,42 +42,8 @@ export class PostService {
     return this.http.get<Page<Action>>(`${HOST}/posts/users/${userId}/histories?page=${page}&action=${status.join(',')}&repairer=${isRepairer}`);
   }
 
-  private getPostsWithApprove(page: number, approved: boolean): Observable<Page<Post>> {
-    return this.http.get<Page<Post>>(`${HOST}/api/posts/approved/${approved}?page=${page}`);
-  }
-
-  getWaitingPosts = (page: number): Observable<Page<Post>> => {
-    return this.http.get<Page<Post>>(`${HOST}/api/posts/waiting?page=${page}`);
-  };
-
-  getBlockedPosts = (page: number): Observable<Page<Post>> => {
-    return this.getPostsWithApprove(page, false);
-  };
-
-  getApprovedPosts = (page: number): Observable<Page<Post>> => {
-    return this.getPostsWithApprove(page, true);
-  };
-
-
-  getAllPostsByUserId = (page: number, userId: number): Observable<Page<Post>> => {
-    return this.http.get<Post[]>(`/api/post/user/${userId}`)
-      .pipe(map((v: Post[]) => {
-        let p = new Page<Post>();
-        p.content = v;
-        return p;
-      }));
-  };
-
   getPostById(id: number): Observable<Post> {
     return this.http.get<Post>(`${HOST}/posts/${id}`);
-  }
-
-  blockPostById(id: number) {
-    return this.http.put(`/api/post/${id}/approve/false`, null);
-  }
-
-  approvePostById(id: number) {
-    return this.http.put(`/api/post/${id}/approve/true`, null);
   }
 
   getPostOfUser(id: number, status: string[], page: number): Observable<Page<Post>> {
@@ -86,5 +52,13 @@ export class PostService {
 
   getFeedback(id: number) {
     return this.http.get(`${HOST}/posts/users/${id}/feedback`);
+  }
+
+  getComments(id: number, action: string[]) {
+    return this.http.get(`${HOST}/requests/${id}/histories/repairers?actions=${action.join(',')}`);
+  }
+
+  updateComment(id: number, hide: boolean) {
+    return this.http.put(`${HOST}/histories/${id}?hide=${hide}`, {});
   }
 }

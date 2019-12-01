@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NzNotificationService } from 'ng-zorro-antd';
 import { PostService } from '../../api/service/post.service';
-import { Post } from '../../api/model/Post';
+import { Post } from '../../api/model/Posts';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Accomodation } from '../../api/model/Accomodation';
 import { tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
+import { defaultAvatar } from 'src/app/config';
 
 @Component({
   selector: 'app-post-detail',
@@ -15,11 +17,39 @@ export class PostDetailComponent implements OnInit {
 
   contentHTML = '';
 
+  HOST = environment.host_be;
+
   post = new Post();
+
+  comments = [];
 
   showMap = false;
 
   disableBtnAction = false;
+
+  colorStatus = {
+    POSTED: 'blue',
+    RECEIVED: 'blue',
+    QUOTED: 'blue',
+    ACCEPTED: 'cyan',
+    WAITING: 'cyan',
+    COMPLETED: 'green',
+    FEEDBACK: 'gold',
+    CLOSED: ''
+  }
+
+  nameStatus = {
+    POSTED: 'Đã đăng',
+    RECEIVED: 'Đã có thợ xem yêu cầu',
+    QUOTED: 'Đã có thợ báo giá',
+
+    ACCEPTED: 'Đã xác nhận',
+    WAITING: 'Chờ làm việc',
+
+    COMPLETED: 'Đã hoàn thành việc',
+    FEEDBACK: 'Đã đánh giá',
+    CLOSED: 'Đã đóng'
+  }
 
   fileList = [
     {
@@ -34,9 +64,7 @@ export class PostDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private notification: NzNotificationService) {
-    this.post.accomodationDTO = new Accomodation();
-    this.post.approved = true;
-    this.post.notApproved = true;
+    this.post.userAvatar = defaultAvatar;
   }
 
   ngOnInit() {
@@ -44,7 +72,7 @@ export class PostDetailComponent implements OnInit {
       const { id } = this.route.snapshot.params;
       this.postService.getPostById(id)
         .pipe(tap((value: Post) => {
-          value.imageStrings.map((img, i) => {
+          value.imagesDescription.map((img, i) => {
             this.fileList.push({
               uid: i,
               name: 'a' + i + '.png',
@@ -56,28 +84,38 @@ export class PostDetailComponent implements OnInit {
         .subscribe((value: Post) => {
           this.post = value;
         });
+
+      this.postService.getComments(id, ['RECEIVE', 'QUOTE', 'ACCEPT', 'COMPLETE', 'FEEDBACK', 'CLOSE'])
+        .subscribe((value: any[]) => {
+          this.comments = value;
+        });
     });
   }
 
-  blockPost() {
-    this.disableBtnAction = true;
-    this.postService.blockPostById(this.post.id)
-      .subscribe((value: Post) => {
-        this.notification.success('Khóa bài', `Bài viết "${value.title}" đã được khóa.`);
-        this.router.navigateByUrl('/posts?tab=1');
-      }, error => {
-        this.disableBtnAction = false;
+  hideComment(commentId) {
+    this.postService.updateComment(commentId, true).subscribe(v => {
+      this.comments.forEach(c => {
+        if (c.id === commentId) c.hide = true;
       });
+    });
+  }
+
+  unhideComment(commentId) {
+    this.postService.updateComment(commentId, false).subscribe(v => {
+      this.comments.forEach(c => {
+        if (c.id === commentId) c.hide = false;
+      });
+    });
   }
 
   approvePost() {
-    this.disableBtnAction = true;
-    this.postService.approvePostById(this.post.id)
-      .subscribe((value: Post) => {
-        this.notification.success('Duyệt bài', `Bài viết "${value.title}" đã được kiểm duyệt.`);
-        this.router.navigateByUrl('/posts?tab=1');
-      }, error => {
-        this.disableBtnAction = false;
-      });
+    // this.disableBtnAction = true;
+    // this.postService.approvePostById(this.post.id)
+    //   .subscribe((value: Post) => {
+    //     this.notification.success('Duyệt bài', `Bài viết "${value.title}" đã được kiểm duyệt.`);
+    //     this.router.navigateByUrl('/posts?tab=1');
+    //   }, error => {
+    //     this.disableBtnAction = false;
+    //   });
   }
 }

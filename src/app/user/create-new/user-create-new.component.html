@@ -5,7 +5,7 @@
       <h2 class="require-title">Thông tin tài khoản</h2>
     </div>
     <div nz-col [nzLg]="16" [nzMd]="24">
-      <form #form="ngForm" (ngSubmit)="login()" nz-form nzLayout="vertical">
+      <form #form="ngForm" nz-form nzLayout="vertical">
         <nz-form-item>
           <nz-form-label>Tài khoản</nz-form-label>
           <nz-form-control [nzValidateStatus]="username.dirty ? (username.invalid  ? 'error' : 'success') : ''">

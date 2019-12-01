@@ -6,6 +6,7 @@
     "start-proxy": "ng serve -o --port 5000 --proxy-config proxy.json",
     "start": "ng serve -o --port 5000",
     "build": "ng build",
+    "deploy": "ng build --prod && firebase deploy --only hosting:management-grabtho",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

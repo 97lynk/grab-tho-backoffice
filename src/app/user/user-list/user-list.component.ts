@@ -35,7 +35,7 @@ export class UserListComponent implements OnInit {
   loadData(page: number) {
     this.loading = true;
     let filterBy = this.accountOptions.filter(item => item.checked).map(item => item.value);
-    this.userSerive.getAllApproverAccounts(page - 1, filterBy)
+    this.userSerive.getAccounts(page - 1, filterBy)
       .subscribe((data: Page<User>) => {
           this.page = data;
           this.loading = false;

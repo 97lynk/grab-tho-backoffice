@@ -63,7 +63,7 @@ export const aclConfig: NbAclOptions = {
       edit: ['post']
     },
     ROLE_ADMIN: {
-      view: ['list_posts', 'post', 'list_users', 'user'],
+      view: ['list_posts', 'post', 'list_users', 'user', 'list_histories'],
       edit: ['post', 'user'],
     },
   },

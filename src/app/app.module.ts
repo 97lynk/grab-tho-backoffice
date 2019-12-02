@@ -33,6 +33,7 @@ import { AuthGuard } from './api/util/auth-guard.service';
 import { RoleGuard } from './api/util/role-guard.service';
 import { VDateTimePipe } from './api/util/vdate-time.pipe';
 import { RouterModule } from '@angular/router';
+import { HistoryComponent } from './history/history.component';
 
 registerLocaleData(en);
 const antDesignIcons = AllIcons as {
@@ -59,7 +60,8 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(key => antDesign
     UserEditProfileComponent,
     UserCreateNewComponent,
     UserSecurityComponent,
-    VDateTimePipe
+    VDateTimePipe,
+    HistoryComponent
   ],
   imports: [
     BrowserModule,

@@ -9,34 +9,6 @@
 </app-title-page>
 <div class="default-card">
   <nz-tabset [nzTabPosition]="positionTop ?'top' : 'left'" [nzSelectedIndex]="tabIndex">
-    <!-- <nz-tab nzTitle="Hoạt động">
-      <ng-template nz-tab>
-        <nz-divider nzDashed [nzText]="title0" nzOrientation="left">
-          <ng-template #title0>
-            <h4>Hoạt động gần đây</h4>
-          </ng-template>
-        </nz-divider>
-        <div class="mx-4">
-          <nz-timeline [nzPending]="pending">
-            <nz-timeline-item *ngFor="let action of actions" [nzColor]="ACTION_COLOR[action.action]">
-              <p>
-                <small>{{ fomatDateTime(action.time) }}</small>
-              </p>
-              <p><b>{{ action.username }}</b>
-                <span *ngIf="action.action == 'CREATE'"> đã tạo một bài đăng </span>
-                <span *ngIf="action.action == 'APPROVE'"> đã duyệt bài đăng </span>
-                <span *ngIf="action.action == 'BLOCK'"> đã khóa bài đăng </span>
-                <a href="javascript:void(0)" routerLink="/posts/{{ action.postId }}/detail">{{ action.postTitle }}</a>
-                <span *ngIf="action.action == 'CREATE'"> đang chờ kiểm duyệt</span>
-              </p>
-            </nz-timeline-item>
-          </nz-timeline>
-          <ng-template #more>
-            <a href="javascript:void(0)" (click)="loadAction(-1)">Xem thêm...</a>
-          </ng-template>
-        </div>
-      </ng-template>
-    </nz-tab> -->
 
     <nz-tab nzTitle="Gần đây">
       <ng-template nz-tab>

@@ -23,7 +23,10 @@
       <span><i nz-icon type="file"></i><span class="nav-text"> Bài đăng</span></span>
     </li>
     <li nz-menu-item routerLink="/users" *nbIsGranted="['view', 'list_users']">
-      <span><i nz-icon nzType="audit" nzTheme="outline"></i><span class="nav-text"> Người dùng</span></span>
+      <span><i nz-icon nzType="team" nzTheme="outline"></i><span class="nav-text"> Người dùng</span></span>
+    </li>
+    <li nz-menu-item routerLink="/histories" *nbIsGranted="['view', 'list_histories']">
+      <span><i nz-icon nzType="barcode" nzTheme="outline"></i><span class="nav-text"> Giao dịch</span></span>
     </li>
   </ul>
 

@@ -15,7 +15,7 @@ export class UserService {
   constructor(private http: HttpClient) {
   }
 
-  getAllApproverAccounts(page: number,  accountType: string[]): Observable<Page<User>> {
+  getAccounts(page: number,  accountType: string[]): Observable<Page<User>> {
     return this.http.get<Page<User>>(`${HOST}/accounts?page=${page}&role=${accountType.join(',')}`);
   }
 

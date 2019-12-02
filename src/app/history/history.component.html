@@ -1,0 +1,25 @@
+<app-title-page></app-title-page>
+<div class="default-card">
+  <nz-table #basicTable [nzData]="histories">
+    <thead>
+      <tr>
+        <th>#ID</th>
+        <th>Tài khoản</th>
+        <th>Giá trị giao dịch</th>
+        <th>Loại giao dịch</th>
+        <th>Thời gian</th>
+        <th>Ghi chú</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+        <td>{{ data.id }})</td>
+        <td>{{ data.repairer.username }} ({{ data.repairer.fullName }})</td>
+        <td>{{ data.xeng }}</td>
+        <td><nz-tag [nzColor]="colorStatus[data.action]">{{ nameStatus[data.action] }}</nz-tag></td>
+        <td>{{ data.createAt | date: 'HH:mm dd/mm/yyyy'}}</td>
+        <td>{{ data.note }}</td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>

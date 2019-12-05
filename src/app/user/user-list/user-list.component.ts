@@ -14,7 +14,6 @@ export class UserListComponent implements OnInit {
 
   ROLE_NAME = {
     ROLE_CUSTOMER: 'Khách hàng',
-    ROLE_ADMIN: 'Quản trị viên',
     ROLE_REPAIRER: 'Thợ',
     ROLE_FB: 'Đăng nhập từ Facebook'
   };
@@ -50,8 +49,7 @@ export class UserListComponent implements OnInit {
   indeterminate = false;
   accountOptions = [
     { label: 'Khách hàng', value: 'ROLE_CUSTOMER', checked: true },
-    { label: 'Thợ', value: 'ROLE_REPAIRER', checked: true },
-    { label: 'Quản trị viên', value: 'ROLE_ADMIN', checked: true },
+    { label: 'Thợ', value: 'ROLE_REPAIRER', checked: true }
   ];
 
   updateAllChecked(): void {

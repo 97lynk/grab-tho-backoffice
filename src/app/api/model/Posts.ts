@@ -1,5 +1,3 @@
-import { Image } from './Image';
-import { Accomodation } from './Accomodation';
 
 export class Post {
 

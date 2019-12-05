@@ -21,6 +21,8 @@ import { Post } from 'src/app/api/model/Posts';
 export class UserDetailComponent implements OnInit {
 
   user: User;
+  
+  repairer: any;
 
   actions = [];
 
@@ -86,6 +88,10 @@ export class UserDetailComponent implements OnInit {
             this.avatar = this.user.avatar;
           else
             this.avatar = defaultAvatar;
+
+          if (this.role === 'ROLE_REPAIRER') {
+            this.userService.getRepairerInfo(this.id).subscribe(value => this.repairer = value);
+          }
 
           this.loadAction(this.id);
         });

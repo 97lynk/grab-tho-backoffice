@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HistoryService } from '../api/service/history.service';
 import { Page } from '../api/model/Page';
+import { History } from '../api/model/History';
 
 @Component({
   selector: 'app-history',
@@ -9,7 +10,7 @@ import { Page } from '../api/model/Page';
 })
 export class HistoryComponent implements OnInit {
 
-  histories = [];
+  histories = new Page<History>();
 
   nameStatus = {
     QUOTE: 'Báo giá',
@@ -25,12 +26,21 @@ export class HistoryComponent implements OnInit {
 
   constructor(
     private historyService: HistoryService
-  ) { }
+  ) {
+    this.histories.content = [];
+    this.histories.totalElements = 0;
+    this.histories.number = 0;
+  }
 
   ngOnInit() {
-    this.historyService.getHistory(10, 0)
+    this.loadData(0);
+  }
+
+
+  loadData(page) {
+    this.historyService.getHistory(10, page)
       .subscribe((data: Page<History>) => {
-        this.histories = data.content;
+        this.histories = data;
       });
   }
 

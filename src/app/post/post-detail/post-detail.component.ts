@@ -3,7 +3,6 @@ import { NzNotificationService } from 'ng-zorro-antd';
 import { PostService } from '../../api/service/post.service';
 import { Post } from '../../api/model/Posts';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Accomodation } from '../../api/model/Accomodation';
 import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { defaultAvatar } from 'src/app/config';

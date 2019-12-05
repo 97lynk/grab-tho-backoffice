@@ -4,6 +4,7 @@ import { UserService } from '../../api/service/user.service';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { User } from 'src/app/api/model/User';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-create-new',
@@ -25,12 +26,13 @@ export class UserCreateNewComponent implements OnInit {
   user = {
     email: '',
     username: '',
+    major: '',
     password: '',
     confirmPassword: '',
     fullName: '',
     address: '',
     phone: '',
-    role: 'ROLE_USER'
+    role: 'ROLE_CUSTOMER'
   };
 
   passwordVisible = false;
@@ -112,7 +114,8 @@ export class UserCreateNewComponent implements OnInit {
         fullName: this.user.fullName,
         address: this.user.address,
         phone: this.user.phone,
-        role: [this.user.role]
+        major: this.user.major,
+        role: this.user.role
       })
     ];
 
@@ -126,7 +129,7 @@ export class UserCreateNewComponent implements OnInit {
       this.clicked = false;
       this.notification.success('Tạo mới tài khoản', `Tài khoản "${this.user.username}" đã được tạo.`);
       if (results[1]) {
-        const url = `http://localhost:8080/requests/description-images/${results[1][0]}`;
+        const url = `${environment.host_be}/requests/description-images/${results[1][0]}`;
         this.userService.uploadAvatar(user.id, url).subscribe(value => this.avatarUrl = url);
       }
       this.router.navigateByUrl('/users')

@@ -25,7 +25,17 @@
     </div>
     <img style="width: 96px; height: 96px; border-radius: 50%" [src]="avatar">
     <h3>{{ user.fullName }} (<span>#{{ user.username }}</span>)</h3>
-    <p><b>{{ user?.roles?.length <= 0 ? ROLE_NAME.ROLE_CUSTOMER : ROLE_NAME[role] }}</b></p>
+    <p>
+      <b *ngIf="role === 'ROLE_CUSTOMER'">{{ ROLE_NAME[role] }}</b>
+      <b *ngIf="role === 'ROLE_REPAIRER' && repairer">{{ repairer.major }}</b>
+    </p>
+    <p *ngIf="repairer">
+      <i nz-icon nzType="star" nzTheme="outline"></i> {{ repairer.rating }}
+      <nz-divider nzType="vertical"></nz-divider>
+      <i nz-icon nzType="tool" nzTheme="outline"></i> {{ repairer.completedJob }}
+      <nz-divider nzType="vertical"></nz-divider>
+      <i nz-icon nzType="wallet" nzTheme="outline"></i> {{ repairer.xeng }}
+    </p>
   </div>
 
   <nz-card class="w-100" [nzBordered]="false">
@@ -36,7 +46,7 @@
             <nz-timeline [nzPending]="pending">
               <nz-timeline-item *ngFor="let action of actions" [nzColor]="ACTION_COLOR[action.status]">
                 <p>
-                  <small>{{ action.createAt | vdatetime }} - {{ action.createAt }}</small>
+                  <small>{{ action.createAt | vdatetime }} - {{ action.createAt | date: 'HH:mm dd/mm/yyyy' }}</small>
                 </p>
                 <p><b>{{ user?.fullName }}</b>
                   <span *ngIf="action.status === 'POST'"> đã tạo một yêu cầu <b>#{{ action.requestId }}</b></span>

@@ -6,6 +6,8 @@
     </div>
     <div nz-col [nzLg]="16" [nzMd]="24">
       <form #form="ngForm" nz-form nzLayout="vertical">
+
+        <!-- username -->
         <nz-form-item>
           <nz-form-label>Tài khoản</nz-form-label>
           <nz-form-control [nzValidateStatus]="username.dirty ? (username.invalid  ? 'error' : 'success') : ''">
@@ -23,6 +25,7 @@
           </nz-form-control>
         </nz-form-item>
 
+        <!-- email -->
         <nz-form-item>
           <nz-form-label>Địa chỉ email</nz-form-label>
           <nz-form-control [nzValidateStatus]="email.dirty ? (email.invalid  ? 'error' : 'success') : ''">
@@ -42,6 +45,7 @@
           </nz-form-control>
         </nz-form-item>
 
+        <!-- password -->
         <nz-form-item>
           <nz-form-label>Mật khẩu</nz-form-label>
           <nz-form-control [nzValidateStatus]="password.dirty ? (password.invalid  ? 'error' : 'success') : ''">
@@ -65,6 +69,7 @@
           </ng-template>
         </nz-form-item>
 
+        <!-- confirm password -->
         <nz-form-item>
           <nz-form-label>Xác nhập mật khẩu</nz-form-label>
           <nz-form-control
@@ -94,13 +99,29 @@
           </ng-template>
         </nz-form-item>
 
+        <!-- accout type -->
         <nz-form-item>
           <nz-form-label>Loại tài khoản</nz-form-label>
-          <nz-radio-group [(ngModel)]="user.role" name="role">
-            <label nz-radio nzValue="ROLE_USER">Khách hàng</label>
+          <nz-radio-group [(ngModel)]="user.role" name="role" #typeAccount>
+            <label nz-radio nzValue="ROLE_CUSTOMER">Khách hàng</label>
             <label nz-radio nzValue="ROLE_REPAIRER">Thợ</label>
             <label nz-radio nzValue="ROLE_ADMIN">Quản trị viên</label>
           </nz-radio-group>
+        </nz-form-item>
+
+        <!-- major -->
+        <nz-form-item *ngIf="typeAccount.value === 'ROLE_REPAIRER'">
+          <nz-form-label>Chuyên môn của thợ</nz-form-label>
+          <nz-form-control [nzValidateStatus]="major.dirty ? (major.invalid  ? 'error' : 'success') : ''">
+            <input type="text" nz-input (focus)="hasError = false" [(ngModel)]="user.major" #major="ngModel"
+              name="major" id="input-major" placeholder="Thợ xây dựng, thợ điện, ..." required
+              [attr.aria-invalid]="major.invalid && major.touched ? true : null" />
+            <ng-container *ngIf="major.invalid && major.touched">
+              <nz-form-explain *ngIf="major.errors?.required" class="invalid-msg">
+                Thông tin không được trống
+              </nz-form-explain>
+            </ng-container>
+          </nz-form-control>
         </nz-form-item>
       </form>
     </div>
@@ -114,8 +135,8 @@
     </div>
     <div nz-col [nzLg]="16" [nzMd]="24">
       <div class="clearfix">
-        <nz-upload class="avatar-uploader float-left mr-3" 
-          nzName="avatar" nzListType="picture-card" [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload">
+        <nz-upload class="avatar-uploader float-left mr-3" nzName="avatar" nzListType="picture-card"
+          [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload">
           <ng-container *ngIf="!avatarUrl">
             <i class="upload-icon" nz-icon [type]="loading ? 'loading' : 'plus'"></i>
             <div class="ant-upload-text">Upload</div>

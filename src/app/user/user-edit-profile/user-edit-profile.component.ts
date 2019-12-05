@@ -7,6 +7,7 @@ import { User } from '../../api/model/User';
 import { NbAuthService } from '@nebular/auth';
 import { defaultAvatar } from '../../config';
 import { DomSanitizer } from '@angular/platform-browser';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-edit-profile',
@@ -113,7 +114,7 @@ export class UserEditProfileComponent implements OnInit {
       case 'done':
         // Get this url from response in real world.
         this.loading = false;
-        const url = `http://localhost:8080/requests/description-images/${info.file.response[0]}`;
+        const url = `${environment.host_be}/requests/description-images/${info.file.response[0]}`;
         this.userService.uploadAvatar(this.user.id, url).subscribe(value => this.avatarUrl = url);
         this.msg.success('Ảnh đại điện đã được thay đổi');
         break;

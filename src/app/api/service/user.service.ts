@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {User} from '../model/User';
-import {Observable} from 'rxjs/internal/Observable';
-import {Page} from '../model/Page';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { User } from '../model/User';
+import { Observable } from 'rxjs/internal/Observable';
+import { Page } from '../model/Page';
 import { environment } from 'src/environments/environment';
 
 const HOST = environment.host_be;
@@ -15,7 +15,7 @@ export class UserService {
   constructor(private http: HttpClient) {
   }
 
-  getAccounts(page: number,  accountType: string[]): Observable<Page<User>> {
+  getAccounts(page: number, accountType: string[]): Observable<Page<User>> {
     return this.http.get<Page<User>>(`${HOST}/accounts?page=${page}&role=${accountType.join(',')}`);
   }
 
@@ -60,4 +60,7 @@ export class UserService {
     return this.http.put(`${HOST}/accounts/${id}/role`, [role]);
   }
 
+  getRepairerInfo(id: number) {
+    return this.http.get(`${HOST}/repairers/${id}`);
+  }
 }

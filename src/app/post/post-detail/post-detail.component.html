@@ -23,7 +23,7 @@
       <div class="wrap">
         <div class="content">
           <div class="content">
-            
+
             <nz-divider style="min-width: 50%; width: 50%;" nzDashed nzText="Mô tả" nzOrientation="left" class="mr-2">
             </nz-divider>
             <p class="ml-2 mb-4" nz-paragraph>{{ post?.textDescription }}</p>
@@ -48,45 +48,48 @@
             <div nz-col nzMd="12" nzSm="24">
               <nz-divider nzDashed nzText="Bình luận" nzOrientation="left" class="ml-2"></nz-divider>
               <div class="ml-2">
-                <ng-container *ngFor="let comment of comments">
-                  <nz-comment
-                    *ngIf="(comment.status === 'QUOTE' || comment.status === 'COMPLETE' || comment.status === 'RECEIVE')"
-                    [nzAuthor]="comment.fullName" nzDatetime="{{ comment.createAt | vdatetime }}">
-                    <nz-avatar nz-comment-avatar nzIcon="user" [nzSrc]="comment.avatar">
-                    </nz-avatar>
-                    <nz-comment-content>
-                      <p *ngIf="comment.status === 'QUOTE'">Báo giá <b>{{ comment.point }} VND</b></p>
-                      <p *ngIf="comment.status === 'COMPLETE'">Xác nhận hoàn thành công việc</p>
-                      <p *ngIf="comment.status === 'RECEIVE'">Xem yêu cầu</p>
-                    </nz-comment-content>
+                <nz-list [nzItemLayout]="'vertical'">
+                  <nz-list-item *ngFor="let comment of comments" class="p-0" [nzExtra]="extra">
+                    <ng-template #extra><span style="line-height: 60px;">#{{ comment.id }}</span></ng-template>
+                    <nz-comment
+                      *ngIf="(comment.status === 'QUOTE' || comment.status === 'COMPLETE' || comment.status === 'RECEIVE')"
+                      [nzAuthor]="comment.fullName" nzDatetime="{{ comment.createAt | vdatetime }}">
+                      <nz-avatar nz-comment-avatar nzIcon="user" [nzSrc]="comment.avatar">
+                      </nz-avatar>
+                      <nz-comment-content>
+                        <p *ngIf="comment.status === 'QUOTE'">Báo giá <b>{{ comment.point }} VND</b></p>
+                        <p *ngIf="comment.status === 'COMPLETE'">Xác nhận hoàn thành công việc</p>
+                        <p *ngIf="comment.status === 'RECEIVE'">Xem yêu cầu</p>
+                      </nz-comment-content>
 
-                    <nz-comment-action>
-                      <span *ngIf="!comment.hide" (click)="hideComment(comment.id)">Ẩn bình luận</span>
-                      <span *ngIf="comment.hide" (click)="unhideComment(comment.id)">Hiện bình luận</span>
-                    </nz-comment-action>
-                  </nz-comment>
+                      <nz-comment-action>
+                        <span *ngIf="!comment.hide" (click)="hideComment(comment.id)">Ẩn bình luận</span>
+                        <span *ngIf="comment.hide" (click)="unhideComment(comment.id)">Hiện bình luận</span>
+                      </nz-comment-action>
+                    </nz-comment>
 
-                  <nz-comment
-                    *ngIf="!(comment.status === 'QUOTE' || comment.status === 'COMPLETE' || comment.status === 'RECEIVE')"
-                    [nzAuthor]="post.userFullName" nzDatetime="{{ comment.createAt | vdatetime }}">
-                    <nz-avatar nz-comment-avatar nzIcon="user" [nzSrc]="post.userAvatar">
-                    </nz-avatar>
-                    <nz-comment-content>
-                      <p *ngIf="comment.status === 'FEEDBACK'">
-                        <nz-rate [ngModel]="post?.rate" nzAllowHalf nzDisabled></nz-rate><br />
-                        {{ post?.comment }}
-                      </p>
-                      <p *ngIf="comment.status === 'CLOSE'">Đóng yêu cầu</p>
-                      <p *ngIf="comment.status === 'ACCEPT'">Chấp nhận giá <b>{{ comment.point }} VND</b> của thợ <a
-                          href="">{{ comment.fullName }}</a></p>
-                    </nz-comment-content>
+                    <nz-comment
+                      *ngIf="!(comment.status === 'QUOTE' || comment.status === 'COMPLETE' || comment.status === 'RECEIVE')"
+                      [nzAuthor]="post.userFullName" nzDatetime="{{ comment.createAt | vdatetime }}">
+                      <nz-avatar nz-comment-avatar nzIcon="user" [nzSrc]="post.userAvatar">
+                      </nz-avatar>
+                      <nz-comment-content>
+                        <p *ngIf="comment.status === 'FEEDBACK'">
+                          <nz-rate [ngModel]="post?.rate" nzAllowHalf nzDisabled></nz-rate><br />
+                          {{ post?.comment }}
+                        </p>
+                        <p *ngIf="comment.status === 'CLOSE'">Đóng yêu cầu</p>
+                        <p *ngIf="comment.status === 'ACCEPT'">Chấp nhận giá <b>{{ comment.point }} VND</b> của thợ <a
+                            href="">{{ comment.fullName }}</a></p>
+                      </nz-comment-content>
 
-                    <nz-comment-action>
-                      <span *ngIf="!comment.hide" (click)="hideComment(comment.id)">Ẩn bình luận</span>
-                      <span *ngIf="comment.hide" (click)="unhideComment(comment.id)">Hiện bình luận</span>
-                    </nz-comment-action>
-                  </nz-comment>
-                </ng-container>
+                      <nz-comment-action>
+                        <span *ngIf="!comment.hide" (click)="hideComment(comment.id)">Ẩn bình luận</span>
+                        <span *ngIf="comment.hide" (click)="unhideComment(comment.id)">Hiện bình luận</span>
+                      </nz-comment-action>
+                    </nz-comment>
+                  </nz-list-item>
+                </nz-list>
               </div>
             </div>
           </div>

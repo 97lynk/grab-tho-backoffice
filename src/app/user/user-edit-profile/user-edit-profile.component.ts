@@ -16,6 +16,8 @@ import { environment } from 'src/environments/environment';
 })
 export class UserEditProfileComponent implements OnInit {
 
+  HOST = environment.host_be;
+  
   loading = false;
   user: User;
   disableBtnAction = false;

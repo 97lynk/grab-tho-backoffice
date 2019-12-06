@@ -7,7 +7,7 @@
     </div>
     <div nz-col [nzLg]="16" [nzMd]="24">
       <div class="clearfix">
-        <nz-upload class="avatar-uploader float-left mr-3" nzAction="/requests/description-images" nzName="images"
+        <nz-upload class="avatar-uploader float-left mr-3" nzAction="{{ HOST }}/requests/description-images" nzName="images"
           nzListType="picture-card" [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload"
           (nzChange)="handleChange($event)">
           <ng-container *ngIf="!avatarUrl">

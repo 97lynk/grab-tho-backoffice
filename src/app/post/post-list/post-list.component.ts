@@ -61,7 +61,7 @@ export class PostListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.filterBy);
+    // console.log(this.filterBy);
     switch (this.filterBy) {
       case 'RECENT':
         this.getData = this.postService.getPostRecent;

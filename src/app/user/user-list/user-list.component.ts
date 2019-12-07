@@ -1,14 +1,15 @@
-import {Component, OnInit} from '@angular/core';
-import {UserService} from '../../api/service/user.service';
-import {Page} from '../../api/model/Page';
-import {User} from '../../api/model/User';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { UserService } from '../../api/service/user.service';
+import { Page } from '../../api/model/Page';
+import { User } from '../../api/model/User';
+import { GarbageCollector } from 'src/app/api/util/garbage.collector';
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
   styleUrls: ['user-list.component.less']
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent implements OnInit, OnDestroy {
 
   page: Page<any> = new Page<any>();
 
@@ -18,7 +19,17 @@ export class UserListComponent implements OnInit {
     ROLE_FB: 'Đăng nhập từ Facebook'
   };
 
+  // filter account
+  allChecked = true;
+  indeterminate = false;
+  accountOptions = [
+    { label: 'Khách hàng', value: 'ROLE_CUSTOMER', checked: true },
+    { label: 'Thợ', value: 'ROLE_REPAIRER', checked: true }
+  ];
+
   loading = false;
+
+  gc = new GarbageCollector();
 
   constructor(private userSerive: UserService) {
     this.page.content = [];
@@ -31,26 +42,26 @@ export class UserListComponent implements OnInit {
     this.loadData(1);
   }
 
+  ngOnDestroy() {
+    this.gc.clearAll();
+  }
+
   loadData(page: number) {
     this.loading = true;
     let filterBy = this.accountOptions.filter(item => item.checked).map(item => item.value);
-    this.userSerive.getAccounts(page - 1, filterBy)
-      .subscribe((data: Page<User>) => {
+
+    this.gc.collect('userSerive.getAccounts',
+      this.userSerive.getAccounts(page - 1, filterBy)
+        .subscribe((data: Page<User>) => {
           this.page = data;
           this.loading = false;
         },
-        error => {
-          this.loading = false;
-        });
+          error => {
+            this.loading = false;
+          })
+    );
   }
 
-  // filter account
-  allChecked = true;
-  indeterminate = false;
-  accountOptions = [
-    { label: 'Khách hàng', value: 'ROLE_CUSTOMER', checked: true },
-    { label: 'Thợ', value: 'ROLE_REPAIRER', checked: true }
-  ];
 
   updateAllChecked(): void {
     this.indeterminate = false;

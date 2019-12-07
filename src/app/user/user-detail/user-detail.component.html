@@ -42,8 +42,8 @@
     <nz-card-tab>
       <nz-tabset nzSize="large" [nzSelectedIndex]="0" [nzTabBarStyle]="{'text-align': 'center'}">
         <nz-tab nzTitle="Hoạt động">
-          <nz-card [nzBordered]="false" nzTitle="Hoạt động gần đây">
-            <nz-timeline [nzPending]="pending">
+          <nz-card [nzBordered]="false">
+            <nz-timeline [nzPending]="pending" nzMode="alternate">
               <nz-timeline-item *ngFor="let action of actions" [nzColor]="ACTION_COLOR[action.status]">
                 <p>
                   <small>{{ action.createAt | vdatetime }} - {{ action.createAt | date: 'HH:mm dd/mm/yyyy' }}</small>
@@ -65,7 +65,9 @@
               </nz-timeline-item>
             </nz-timeline>
             <ng-template #more>
-              <a href="javascript:void(0)" (click)="loadAction(user.id)">Xem thêm...</a>
+              <div style="text-align: center;">
+                <a href="javascript:void(0)" style="padding-left: 80px;" (click)="loadAction(user.id)">Xem thêm...</a>
+              </div>
             </ng-template>
           </nz-card>
         </nz-tab>
@@ -79,13 +81,15 @@
             nzNoResult="Không có dữ liệu">
             <ng-template #item let-item>
               <nz-list-item *ngIf="item.feedBack">
-                <nz-list-item-meta [nzTitle]="item.userFullName" [nzAvatar]="item.userAvatar"
-                  [nzDescription]="nzDescription">
+                <nz-list-item-meta [nzTitle]="nzTitle" [nzAvatar]="item.userAvatar" [nzDescription]="nzDescription">
+                  <ng-template #nzTitle>
+                    <a [routerLink]="['/users', item.userId, 'detail']">{{ item.userFullName }}</a>
+                  </ng-template>
                   <ng-template #nzDescription>
                     <p>{{ item.createAt | vdatetime}}</p>
                     <nz-rate [ngModel]="item.rate" nzDisabled nzAllowHalf></nz-rate>
                     <p style="color: rgba(0, 0, 0, 0.65);">{{ item.comment }} </p>
-                    <p><a href="/posts/{{ item.requestId }}">Chi tiết</a> </p>
+                    <p><a routerLink="['/posts/',item.requestId ]">Chi tiết</a> </p>
                   </ng-template>
                 </nz-list-item-meta>
               </nz-list-item>

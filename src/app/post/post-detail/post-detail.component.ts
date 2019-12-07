@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NzNotificationService } from 'ng-zorro-antd';
 import { PostService } from '../../api/service/post.service';
 import { Post } from '../../api/model/Posts';
@@ -6,13 +6,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { defaultAvatar } from 'src/app/config';
+import { GarbageCollector } from 'src/app/api/util/garbage.collector';
 
 @Component({
   selector: 'app-post-detail',
   templateUrl: './post-detail.component.html',
   styleUrls: ['./post-detail.component.less']
 })
-export class PostDetailComponent implements OnInit {
+export class PostDetailComponent implements OnInit, OnDestroy {
 
   contentHTML = '';
 
@@ -50,71 +51,52 @@ export class PostDetailComponent implements OnInit {
     CLOSED: 'Đã đóng'
   }
 
-  fileList = [
-    {
-      uid: -1,
-      name: 'can-ho.png',
-      status: 'done',
-      url: 'http://localhost:8080/api/image/064e893a-1d69-47c5-8e07-d74a283106db'
-    }
-  ];
+  gc = new GarbageCollector();
 
-  constructor(private postService: PostService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private notification: NzNotificationService) {
+  constructor(
+    private postService: PostService,
+    private route: ActivatedRoute) {
     this.post.userAvatar = defaultAvatar;
   }
 
   ngOnInit() {
-    this.route.url.subscribe(url => {
-      const { id } = this.route.snapshot.params;
-      this.postService.getPostById(id)
-        .pipe(tap((value: Post) => {
-          value.imagesDescription.map((img, i) => {
-            this.fileList.push({
-              uid: i,
-              name: 'a' + i + '.png',
-              status: 'done',
-              url: img
-            });
-          });
-        }))
-        .subscribe((value: Post) => {
-          this.post = value;
-        });
+    this.gc.collect('url',
+      this.route.url.subscribe(url => {
+        const { id } = this.route.snapshot.params;
 
-      this.postService.getComments(id, ['RECEIVE', 'QUOTE', 'ACCEPT', 'COMPLETE', 'FEEDBACK', 'CLOSE'])
-        .subscribe((value: any[]) => {
-          this.comments = value;
-        });
-    });
+        this.gc.collect('postService.getPostById',
+          this.postService.getPostById(id).subscribe((value: Post) => this.post = value)
+        );
+
+        this.gc.collect('postService.getComments',
+          this.postService.getComments(id, ['RECEIVE', 'QUOTE', 'ACCEPT', 'COMPLETE', 'FEEDBACK', 'CLOSE'])
+            .subscribe((value: any[]) => this.comments = value)
+        );
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.gc.clearAll();
   }
 
   hideComment(commentId) {
-    this.postService.updateComment(commentId, true).subscribe(v => {
-      this.comments.forEach(c => {
-        if (c.id === commentId) c.hide = true;
-      });
-    });
+    this.gc.collect('postService.hideComment',
+      this.postService.updateComment(commentId, true).subscribe(v => {
+        this.comments.forEach(c => {
+          if (c.id === commentId) c.hide = true;
+        });
+      })
+    );
   }
 
   unhideComment(commentId) {
-    this.postService.updateComment(commentId, false).subscribe(v => {
-      this.comments.forEach(c => {
-        if (c.id === commentId) c.hide = false;
-      });
-    });
-  }
-
-  approvePost() {
-    // this.disableBtnAction = true;
-    // this.postService.approvePostById(this.post.id)
-    //   .subscribe((value: Post) => {
-    //     this.notification.success('Duyệt bài', `Bài viết "${value.title}" đã được kiểm duyệt.`);
-    //     this.router.navigateByUrl('/posts?tab=1');
-    //   }, error => {
-    //     this.disableBtnAction = false;
-    //   });
+    this.gc.collect('postService.unhideComment',
+      this.postService.updateComment(commentId, false).subscribe(v => {
+        this.comments.forEach(c => {
+          if (c.id === commentId) c.hide = false;
+        });
+      })
+    );
   }
 }

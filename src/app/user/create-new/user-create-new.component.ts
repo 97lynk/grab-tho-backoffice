@@ -1,17 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NzMessageService, NzNotificationService, UploadFile } from 'ng-zorro-antd';
 import { UserService } from '../../api/service/user.service';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { User } from 'src/app/api/model/User';
 import { environment } from 'src/environments/environment';
+import { GarbageCollector } from 'src/app/api/util/garbage.collector';
 
 @Component({
   selector: 'app-create-new',
   templateUrl: './user-create-new.component.html',
   styleUrls: ['./user-create-new.component.less']
 })
-export class UserCreateNewComponent implements OnInit {
+export class UserCreateNewComponent implements OnInit, OnDestroy {
 
   loading = false;
 
@@ -43,6 +44,8 @@ export class UserCreateNewComponent implements OnInit {
 
   hasError = false;
 
+  gc = new GarbageCollector();
+
   constructor(
     private msg: NzMessageService,
     private userService: UserService,
@@ -51,6 +54,10 @@ export class UserCreateNewComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ngOnDestroy() {
+    this.gc.clearAll();
   }
 
 
@@ -124,20 +131,23 @@ export class UserCreateNewComponent implements OnInit {
       formData.append('images', this.fileUpload);
       req.push(this.userService.uploadImage(formData));
     }
-    forkJoin(req).subscribe(results => {
-      const user = results[0] as User;
-      this.clicked = false;
-      this.notification.success('Tạo mới tài khoản', `Tài khoản "${this.user.username}" đã được tạo.`);
-      if (results[1]) {
-        const url = `${environment.host_be}/requests/description-images/${results[1][0]}`;
-        this.userService.uploadAvatar(user.id, url).subscribe(value => this.avatarUrl = url);
-      }
-      this.router.navigateByUrl('/users')
-    },
-      error => {
+
+    this.gc.collect('forkJoin',
+      forkJoin(req).subscribe(results => {
+        const user = results[0] as User;
         this.clicked = false;
-        this.notification.error('Tạo mới tài khoản', `Đã có lỗi xảy ra!<br/>Tài khoản chưa được tạo: ${error.error.error_description || ''}`);
-      });
+        this.notification.success('Tạo mới tài khoản', `Tài khoản "${this.user.username}" đã được tạo.`);
+        if (results[1]) {
+          const url = `${environment.host_be}/requests/description-images/${results[1][0]}`;
+          this.gc.collect('userService.uploadAvatar', this.userService.uploadAvatar(user.id, url).subscribe(value => this.avatarUrl = url));
+        }
+        this.router.navigateByUrl('/users')
+      },
+        error => {
+          this.clicked = false;
+          this.notification.error('Tạo mới tài khoản', `Đã có lỗi xảy ra!<br/>Tài khoản chưa được tạo: ${error.error.error_description || ''}`);
+        })
+    );
   }
 
   handleChange(info: { file: UploadFile }): void {

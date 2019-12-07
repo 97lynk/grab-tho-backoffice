@@ -1,10 +1,6 @@
-/* entryComponents: NzDemoTabContentLazyComponent,NzDemoTabContentEagerlyComponent */
-import {Component, TemplateRef, ViewChild} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {PostService} from '../../api/service/post.service';
-import {Action} from '../../api/model/Action';
-import {Page} from '../../api/model/Page';
-import {tap} from 'rxjs/operators';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Action } from '../../api/model/Action';
 
 @Component({
   selector: 'app-post-management',
@@ -34,27 +30,12 @@ export class PostManagementComponent {
 
   currentPage = 0;
 
-  constructor(private route: ActivatedRoute, private postService: PostService) {
+  constructor(private route: ActivatedRoute) {
     this.pending = this.pendingTemp;
   }
 
   ngOnInit(): void {
     this.tabIndex = this.route.snapshot.queryParams.tab;
-    this.loadAction();
-  }
-
-  loadAction() {
-    // this.postService.getActions(this.currentPage, -1)
-    //   .pipe(tap((value: any) => {
-    //     if (value.last) this.pending = false;
-    //     else{
-    //       this.currentPage++;
-    //       this.pending = this.pendingTemp;
-    //     }
-    //   }))
-    //   .subscribe((value: Page<Action>) => {
-    //     this.actions.push(...value.content);
-    //   });
   }
 
   loadWaitingPostTabComplete($event) {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NzMessageService, NzNotificationService, UploadFile } from 'ng-zorro-antd';
 import { Observable, Observer } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,21 +8,24 @@ import { NbAuthService } from '@nebular/auth';
 import { defaultAvatar } from '../../config';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
+import { GarbageCollector } from 'src/app/api/util/garbage.collector';
 
 @Component({
   selector: 'app-edit-profile',
   templateUrl: './user-edit-profile.component.html',
   styleUrls: ['./user-edit-profile.component.less']
 })
-export class UserEditProfileComponent implements OnInit {
+export class UserEditProfileComponent implements OnInit, OnDestroy {
 
   HOST = environment.host_be;
-  
+
   loading = false;
   user: User;
   disableBtnAction = false;
 
   avatarUrl: any;
+
+  gc = new GarbageCollector();
 
   constructor(private msg: NzMessageService,
     private userService: UserService,
@@ -36,14 +39,20 @@ export class UserEditProfileComponent implements OnInit {
 
   ngOnInit() {
     const { id } = this.route.snapshot.params;
-    this.userService.getAccountById(id)
-      .subscribe(value => {
-        this.user = value;
-        if (this.user.avatar)
-          this.avatarUrl = this.user.avatar;
-        else
-          this.avatarUrl = defaultAvatar;
-      });
+    this.gc.collect('userService.getAccountById',
+      this.userService.getAccountById(id)
+        .subscribe(value => {
+          this.user = value;
+          if (this.user.avatar)
+            this.avatarUrl = this.user.avatar;
+          else
+            this.avatarUrl = defaultAvatar;
+        })
+    );
+  }
+
+  ngOnDestroy() {
+    this.gc.clearAll();
   }
 
   saveChangeProfile() {
@@ -54,11 +63,13 @@ export class UserEditProfileComponent implements OnInit {
     prepareUser.address = this.user.address;
     prepareUser.address = this.user.address;
 
-    this.userService.updateProfile(this.user.id, prepareUser)
-      .subscribe(value => {
-        this.notification.success('Thay đổi thông tin', 'Thông tin cá nhân đã được thay đổi');
-        this.router.navigate(['users', this.user.id, 'detail']);
-      });
+    this.gc.collect('userService.updateProfile',
+      this.userService.updateProfile(this.user.id, prepareUser)
+        .subscribe(value => {
+          this.notification.success('Thay đổi thông tin', 'Thông tin cá nhân đã được thay đổi');
+          this.router.navigate(['users', this.user.id, 'detail']);
+        })
+    );
   }
 
   beforeUpload = (file: File) => {
@@ -117,7 +128,8 @@ export class UserEditProfileComponent implements OnInit {
         // Get this url from response in real world.
         this.loading = false;
         const url = `${environment.host_be}/requests/description-images/${info.file.response[0]}`;
-        this.userService.uploadAvatar(this.user.id, url).subscribe(value => this.avatarUrl = url);
+        this.gc.collect('userService.uploadAvatar',
+          this.userService.uploadAvatar(this.user.id, url).subscribe(value => this.avatarUrl = url));
         this.msg.success('Ảnh đại điện đã được thay đổi');
         break;
       case 'error':

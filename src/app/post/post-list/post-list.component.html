@@ -11,7 +11,7 @@
       </ng-template>
       <nz-list-item-meta [nzAvatar]="item.userAvatar" [nzTitle]="nzTitle"
         nzDescription="{{ item.createAt | vdatetime}}">
-        <ng-template #nzTitle><span nz-text nzType="primary">{{ item.userFullName }}</span></ng-template>
+        <ng-template #nzTitle><a [routerLink]="['/users', item.userId, 'detail']">{{ item.userFullName }}</a></ng-template>
       </nz-list-item-meta>
       <ng-template #extra>
         <p class="my-2">

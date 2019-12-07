@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
 import { Post } from '../../api/model/Posts';
 import { PostService } from '../../api/service/post.service';
 import { Page } from '../../api/model/Page';
 import { NzNotificationService } from 'ng-zorro-antd';
 import { environment } from 'src/environments/environment';
+import { GarbageCollector } from 'src/app/api/util/garbage.collector';
 
 
 @Component({
@@ -11,7 +12,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './post-list.component.html',
   styleUrls: ['post-list.component.less']
 })
-export class PostListComponent implements OnInit {
+export class PostListComponent implements OnInit, OnDestroy {
 
   HOST = environment.host_be;
 
@@ -30,6 +31,9 @@ export class PostListComponent implements OnInit {
   disableBtnAction = false;
 
   userId: number = null;
+
+
+  gc = new GarbageCollector();
 
   colorStatus = {
     POSTED: 'blue',
@@ -85,19 +89,25 @@ export class PostListComponent implements OnInit {
     this.loadData(1);
   }
 
+  ngOnDestroy() {
+    this.gc.clearAll();
+  }
+
   loadData(page) {
     this.loading = true;
-    this.getData(page - 1)
-      .subscribe((value: any) => {
-        this.data = value.content;
-        this.loadDataComplete.emit((page == 1 && this.data.length > 0) || page > 1);
-        value.content = [];
-        this.page = value;
-        this.loading = false;
-      },
-        error => {
+
+    this.gc.collect('getData',
+      this.getData(page - 1)
+        .subscribe((value: any) => {
+          this.data = value.content;
+          this.loadDataComplete.emit((page == 1 && this.data.length > 0) || page > 1);
+          value.content = [];
+          this.page = value;
           this.loading = false;
-        });
+        }, error => {
+          this.loading = false;
+        })
+    );
   }
 
   loadDataFilterUserId(page: number) {
@@ -110,15 +120,4 @@ export class PostListComponent implements OnInit {
     return preElement.innerText;
   }
 
-  approvePost(id) {
-    this.disableBtnAction = true;
-    // this.postService.approvePostById(id)
-    //   .subscribe((value: Post) => {
-    //     this.notification.success('Duyệt bài', `Bài viết "${value.}" đã được kiểm duyệt.`);
-    //     this.disableBtnAction = false;
-    //     this.loadData(1);
-    //   }, error => {
-    //     this.disableBtnAction = false;
-    //   });
-  }
 }

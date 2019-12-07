@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, OnDestroy } from '@angular/core';
 import { UserService } from '../../api/service/user.service';
 import { ActivatedRoute } from '@angular/router';
 import { User } from '../../api/model/User';
@@ -12,16 +12,17 @@ import { NbAuthOAuth2JWTToken, NbTokenService } from '@nebular/auth';
 import { DomSanitizer } from '@angular/platform-browser';
 import { defaultAvatar } from '../../config';
 import { Post } from 'src/app/api/model/Posts';
+import { GarbageCollector } from 'src/app/api/util/garbage.collector';
 
 @Component({
   selector: 'app-customer-detail',
   templateUrl: './user-detail.component.html',
   styleUrls: ['./user-detail.component.less']
 })
-export class UserDetailComponent implements OnInit {
+export class UserDetailComponent implements OnInit, OnDestroy {
 
   user: User;
-  
+
   repairer: any;
 
   actions = [];
@@ -62,14 +63,14 @@ export class UserDetailComponent implements OnInit {
 
   id: number;
 
+  gc = new GarbageCollector();
+
   constructor(private userService: UserService,
     private postService: PostService,
     private modal: NzModalService,
     private notification: NzNotificationService,
-    private accessChecker: NbAccessChecker,
     private tokenService: NbTokenService,
-    private route: ActivatedRoute,
-    private _sanitizer: DomSanitizer) {
+    private route: ActivatedRoute) {
     this.user = new User();
     this.tokenService.get().subscribe((token: NbAuthOAuth2JWTToken) => {
       this.canBlock = (token.getAccessTokenPayload()['account'].id != this.route.snapshot.params.id);
@@ -77,57 +78,69 @@ export class UserDetailComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.url.subscribe(url => {
-      this.id = this.route.snapshot.params.id;
-      this.userService.getAccountById(this.id)
-        .subscribe(value => {
-          this.user = value;
-          this.role = (this.user.roles.length <= 0) ? 'ROLE_CUSTOMER' : this.user.roles[0];
+    this.gc.collect('url',
+      this.route.url.subscribe(url => {
+        this.repairer = null;
+        this.id = this.route.snapshot.params.id;
 
-          if (this.user.avatar)
-            this.avatar = this.user.avatar;
-          else
-            this.avatar = defaultAvatar;
+        this.gc.collect('userService.getAccountById', this.userService.getAccountById(this.id)
+          .subscribe(value => {
+            this.user = value;
+            this.role = (this.user.roles.length <= 0) ? 'ROLE_CUSTOMER' : this.user.roles[0];
 
-          if (this.role === 'ROLE_REPAIRER') {
-            this.userService.getRepairerInfo(this.id).subscribe(value => this.repairer = value);
-          }
+            if (this.user.avatar)
+              this.avatar = this.user.avatar;
+            else
+              this.avatar = defaultAvatar;
 
-          this.loadAction(this.id);
-        });
+            if (this.role === 'ROLE_REPAIRER') {
+              this.gc.collect('userService.getRepairerInfo',
+                this.userService.getRepairerInfo(this.id).subscribe(value => this.repairer = value));
+            }
 
-      this.postService.getFeedback(this.id)
-        .subscribe((data: any[]) => {
-          this.feedback = data;
-        });
-    })
+            this.loadAction(this.id);
+          })
+        );
+
+        this.gc.collect('postService.getFeedback',
+          this.postService.getFeedback(this.id).subscribe((data: any[]) => this.feedback = data));
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.gc.clearAll();
   }
 
   loadAction(id: number) {
     if (this.role === 'ROLE_CUSTOMER')
-      this.postService.getActions(false, this.id, ['POST', 'ACCEPT', 'CLOSE', 'FEEDBACK'], this.currentPage)
-        .pipe(tap((value: any) => {
-          if (value.last) this.pending = false;
-          else {
-            this.currentPage++;
-            this.pending = this.pendingTemp;
-          }
-        }))
-        .subscribe((value: Page<any>) => {
-          this.actions.push(...value.content);
-        });
+      this.gc.collect('postService.getActions',
+        this.postService.getActions(false, this.id, ['POST', 'ACCEPT', 'CLOSE', 'FEEDBACK'], this.currentPage)
+          .pipe(tap((value: any) => {
+            if (value.last) this.pending = false;
+            else {
+              this.currentPage++;
+              this.pending = this.pendingTemp;
+            }
+          }))
+          .subscribe((value: Page<any>) => {
+            this.actions.push(...value.content);
+          })
+      );
     else if (this.role === 'ROLE_REPAIRER')
-      this.postService.getActions(true, this.id, ['RECEIVE', 'QUOTE', 'COMPLETE'], this.currentPage)
-        .pipe(tap((value: any) => {
-          if (value.last) this.pending = false;
-          else {
-            this.currentPage++;
-            this.pending = this.pendingTemp;
-          }
-        }))
-        .subscribe((value: Page<any>) => {
-          this.actions.push(...value.content);
-        });
+      this.gc.collect('postService.getActions',
+        this.postService.getActions(true, this.id, ['RECEIVE', 'QUOTE', 'COMPLETE'], this.currentPage)
+          .pipe(tap((value: any) => {
+            if (value.last) this.pending = false;
+            else {
+              this.currentPage++;
+              this.pending = this.pendingTemp;
+            }
+          }))
+          .subscribe((value: Page<any>) => {
+            this.actions.push(...value.content);
+          })
+      );
   }
 
   confirmBlockAccount() {
@@ -153,15 +166,19 @@ export class UserDetailComponent implements OnInit {
 
   blockAccount(block: boolean) {
     if (block)
-      this.userService.blockAccount(this.user.id).subscribe(value => {
-        this.notification.success('Khóa tài khoản', `Tài khoản ${this.user.email} đã bị khóa`);
-        this.user = value;
-      });
+      this.gc.collect('userService.blockAccount',
+        this.userService.blockAccount(this.user.id).subscribe(value => {
+          this.notification.success('Khóa tài khoản', `Tài khoản ${this.user.email} đã bị khóa`);
+          this.user = value;
+        })
+      );
     else
-      this.userService.unBlockAccount(this.user.id).subscribe(value => {
-        this.notification.success('Mở khóa tài khoản', `Tài khoản ${this.user.email} đã được mở khóa`);
-        this.user = value;
-      });
+      this.gc.collect('userService.unBlockAccount',
+        this.userService.unBlockAccount(this.user.id).subscribe(value => {
+          this.notification.success('Mở khóa tài khoản', `Tài khoản ${this.user.email} đã được mở khóa`);
+          this.user = value;
+        })
+      );
   }
 
   fomatDateTime(dt: number[]) {

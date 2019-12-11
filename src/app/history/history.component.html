@@ -14,8 +14,8 @@
     <tbody>
       <tr *ngFor="let data of basicTable.data">
         <td>{{ data.id }}</td>
-        <td>{{ data.repairer.username }} ({{ data.repairer.fullName }})</td>
-        <td>{{ data.xeng }}</td>
+        <td><a [routerLink]="['/users', data.repairer.uid, 'detail']">{{ data.repairer.username }}</a> ({{ data.repairer.fullName }})</td>
+        <td><span *ngIf="data.xeng > 0">+</span>{{ data.xeng }}</td>
         <td>
           <nz-tag [nzColor]="colorStatus[data.action]">{{ nameStatus[data.action] }}</nz-tag>
         </td>

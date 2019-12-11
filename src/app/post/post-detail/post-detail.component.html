@@ -7,7 +7,7 @@
     <!--title-->
     <nz-page-header-title>
       <nz-avatar nz-page-header-avatar [nzSrc]="post?.userAvatar"> </nz-avatar>
-      {{ post?.userFullName }}
+      <a [routerLink]="['/users', post?.userId, 'detail']">{{ post?.userFullName }}</a>
     </nz-page-header-title>
 
     <!--subtitle-->
@@ -53,7 +53,11 @@
                     <ng-template #extra><span style="line-height: 60px;">#{{ comment.id }}</span></ng-template>
                     <nz-comment
                       *ngIf="(comment.status === 'QUOTE' || comment.status === 'COMPLETE' || comment.status === 'RECEIVE')"
-                      [nzAuthor]="comment.fullName" nzDatetime="{{ comment.createAt | vdatetime }}">
+                      [nzAuthor]="nzAuthor" nzDatetime="{{ comment.createAt | vdatetime }}">
+                      <ng-template #nzAuthor>
+                        <a [routerLink]="['/users', comment.uid, 'detail']">{{ comment.fullName }}</a>
+                      </ng-template>
+
                       <nz-avatar nz-comment-avatar nzIcon="user" [nzSrc]="comment.avatar">
                       </nz-avatar>
                       <nz-comment-content>

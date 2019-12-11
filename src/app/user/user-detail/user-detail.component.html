@@ -72,7 +72,7 @@
           </nz-card>
         </nz-tab>
 
-        <nz-tab nzTitle="Bài đăng" *ngIf="role === 'ROLE_CUSTOMER' || role === 'ROLE_REPAIRER'">
+        <nz-tab nzTitle="Yêu cầu" *ngIf="role === 'ROLE_CUSTOMER' || role === 'ROLE_REPAIRER'">
           <app-post-list [filterBy]="id"></app-post-list>
         </nz-tab>
 

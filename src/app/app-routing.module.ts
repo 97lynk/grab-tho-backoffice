@@ -41,12 +41,12 @@ const routes: Routes = [
 
       {
         path: 'posts', component: PostManagementComponent,
-        data: { breadcrumb: 'Quản lý bài đăng', title: 'Danh sách bài đăng' }
+        data: { breadcrumb: 'Quản lý yêu cầu', title: 'Danh sách yêu cầu' }
       },
       {
-        path: 'posts', data: { breadcrumb: 'Quản lý bài đăng', title: 'Danh sách bài đăng' },
+        path: 'posts', data: { breadcrumb: 'Quản lý yêu cầu', title: 'Danh sách yêu cầu' },
         children: [
-          { path: ':id/detail', component: PostDetailComponent, data: { breadcrumb: 'Chi tiết bài đăng', title: 'Chi tiết bài đăng' } }
+          { path: ':id/detail', component: PostDetailComponent, data: { breadcrumb: 'Chi tiết yêu cầu', title: 'Chi tiết yêu cầu' } }
         ]
       },
 

@@ -6,8 +6,8 @@
 
     <!--title-->
     <nz-page-header-title>
-      <nz-avatar nz-page-header-avatar [nzSrc]="post?.userAvatar"> </nz-avatar>
-      <a [routerLink]="['/users', post?.userId, 'detail']">{{ post?.userFullName }}</a>
+      <nz-avatar nz-page-header-avatar [nzSrc]="post?.userAvatar"></nz-avatar>
+      <a [routerLink]="['/users', post?.userId, 'detail']"> {{ post?.userFullName }}</a>
     </nz-page-header-title>
 
     <!--subtitle-->
@@ -36,7 +36,7 @@
 
           <div nz-row class="mt-2">
 
-            <div nz-col nzMd="12" nzSm="24">
+            <div nz-col nzMd="(comments && comments.length > 0 ? 12 : 24)" nzSm="24">
               <nz-divider style="min-width: calc(100% - 30px); width: calc(100% - 30px);" nzDashed nzText="Hình ảnh"
                 nzOrientation="left"></nz-divider>
               <div class="px-2">
@@ -45,7 +45,7 @@
               </div>
             </div>
 
-            <div nz-col nzMd="12" nzSm="24">
+            <div nz-col *ngIf="comments && comments.length > 0" nzMd="12" nzSm="24">
               <nz-divider nzDashed nzText="Bình luận" nzOrientation="left" class="ml-2"></nz-divider>
               <div class="ml-2">
                 <nz-list [nzItemLayout]="'vertical'">
